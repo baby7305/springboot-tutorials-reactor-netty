@@ -10,10 +10,11 @@ import reactor.netty.resources.LoopResources;
 import reactor.netty.udp.UdpClient;
 import reactor.netty.udp.UdpServer;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import java.util.concurrent.CountDownLatch;
+
 
 public class UdpEchoServer {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		LoopResources loopResources = LoopResources.create("echo-test-udp");
 		Connection server = UdpServer.create() // Prepares a UDP server for configuration.
 				.port(0) // Configures the port number as zero, this will let the system pick up an
@@ -38,18 +39,24 @@ public class UdpEchoServer {
 				.bind() // Binds the UDP server and returns a Mono<Connection>.
 				.block(); // Blocks and waits the server to finish initialising.
 
-		assertNotNull(server);
-
+		CountDownLatch latch = new CountDownLatch(1);
 		Connection client =
 				UdpClient.create()               // Prepares a UDP client for configuration.
 						.port(server.address()  // Obtains the server's port and provide it as a port to which this
 								.getPort()) // client should connect.
 						.runOn(loopResources)   // Configures the UDP client to run on a specific LoopResources.
 						.wiretap(true)              // Applies a wire logger configuration.
+						.handle((in, out) -> out.sendString(Mono.just("World!")).then(in.receiveObject().doOnNext(o -> {
+							if (o instanceof DatagramPacket) {
+								// Incoming DatagramPacket
+								DatagramPacket p = (DatagramPacket) o;
+								if ("Hello World!".equals(p.content().toString(CharsetUtil.UTF_8))) {
+									latch.countDown();
+								}
+							}
+						}).then()).then().log("udp-client"))
 						.connect()              // Connects the client.
 						.block();               // Subscribes to the returned Mono<Connection> and block.
-
-		assertNotNull(client);
 
 		server.disposeNow(); // Stops the server and releases the resources.
 
