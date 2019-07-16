@@ -7,6 +7,7 @@ import io.netty.util.CharsetUtil;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
 import reactor.netty.resources.LoopResources;
+import reactor.netty.udp.UdpClient;
 import reactor.netty.udp.UdpServer;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -39,6 +40,17 @@ public class UdpEchoServer {
 
 		assertNotNull(server);
 
+		Connection client =
+				UdpClient.create()               // Prepares a UDP client for configuration.
+						.port(server.address()  // Obtains the server's port and provide it as a port to which this
+								.getPort()) // client should connect.
+						.connect()              // Connects the client.
+						.block();               // Subscribes to the returned Mono<Connection> and block.
+
+		assertNotNull(client);
+
 		server.disposeNow(); // Stops the server and releases the resources.
+
+		client.disposeNow();       // Stops the client and releases the resources.
 	}
 }
