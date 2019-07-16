@@ -44,6 +44,8 @@ public class UdpEchoServer {
 				UdpClient.create()               // Prepares a UDP client for configuration.
 						.port(server.address()  // Obtains the server's port and provide it as a port to which this
 								.getPort()) // client should connect.
+						.runOn(loopResources)   // Configures the UDP client to run on a specific LoopResources.
+						.wiretap(true)              // Applies a wire logger configuration.
 						.connect()              // Connects the client.
 						.block();               // Subscribes to the returned Mono<Connection> and block.
 
