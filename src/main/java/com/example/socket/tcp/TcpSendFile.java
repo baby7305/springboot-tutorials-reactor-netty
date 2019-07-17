@@ -3,7 +3,9 @@ package com.example.socket.tcp;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import reactor.core.publisher.Mono;
+import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
+import reactor.netty.tcp.TcpClient;
 import reactor.netty.tcp.TcpServer;
 
 import java.net.URISyntaxException;
@@ -32,6 +34,13 @@ public class TcpSendFile {
 						}).log("tcp-server"))
 						.bindNow(); // Starts the server in a blocking fashion, and waits for it to finish initializing.
 
+		Connection client = TcpClient.create() // Prepares a TCP client for configuration.
+				.port(server.port()) // Obtains the server's port and provide it as a port to which this
+										// client should connect.
+				.connectNow(); // Blocks the client and returns a Connection.
+
 		server.disposeNow(); // Stops the server and releases the resources.
+
+		client.disposeNow(); // Stops the client and releases the resources.
 	}
 }
