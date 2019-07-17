@@ -1,6 +1,7 @@
 package com.example.socket.tcp;
 
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
@@ -8,13 +9,14 @@ import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpClient;
 import reactor.netty.tcp.TcpServer;
 
+import javax.net.ssl.SSLException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.cert.CertificateException;
 
 public class TcpSendFile {
-	public static void main(String[] args) throws CertificateException {
+	public static void main(String[] args) throws CertificateException, SSLException {
 		SelfSignedCertificate cert = new SelfSignedCertificate();
 		SslContextBuilder sslContextBuilder =
 				SslContextBuilder.forServer(cert.certificate(), cert.privateKey());
@@ -37,6 +39,9 @@ public class TcpSendFile {
 		Connection client = TcpClient.create() // Prepares a TCP client for configuration.
 				.port(server.port()) // Obtains the server's port and provide it as a port to which this
 										// client should connect.
+				// Configures SSL providing an already configured SslContext.
+				.secure(SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
+				.wiretap(true) // Applies a wire logger configuration.
 				.connectNow(); // Blocks the client and returns a Connection.
 
 		server.disposeNow(); // Stops the server and releases the resources.
