@@ -11,13 +11,14 @@ public class Server {
 		Socket socket = serverSocket.accept();
 		InputStream inputStream = socket.getInputStream();
 		OutputStream outputStream = socket.getOutputStream();
-
 		ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
 		for (int i = 0; i < 5; i++) {
 			Userinfo userinfo = (Userinfo) objectInputStream.readObject();
 			System.out.println("在服务端打印：" + (i + 1));
 			System.out.println(userinfo.toString());
+
 			Userinfo newUserinfo = new Userinfo();
 			newUserinfo.setId(i + 1);
 			newUserinfo.setUsername("serverUsername" + (i + 1));
