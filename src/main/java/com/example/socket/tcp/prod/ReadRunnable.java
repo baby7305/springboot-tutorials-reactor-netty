@@ -18,20 +18,20 @@ public class ReadRunnable implements Runnable {
 	public void run() {
 		try {
 			InputStream inputStream = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
 			//输入开始
-			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-			int byteLength = objectInputStream.readInt();
-			byte[] byteArray = new byte[byteLength];
-			objectInputStream.readFully(byteArray);
-			String newString = new String(byteArray);
-			System.out.println(newString);
+			Userinfo userinfo = (Userinfo) objectInputStream.readObject();
+			System.out.println("获取对象");
+			System.out.println(userinfo.toString());
 			//输入结束
 
 			objectInputStream.close();
 			inputStream.close();
 			socket.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
