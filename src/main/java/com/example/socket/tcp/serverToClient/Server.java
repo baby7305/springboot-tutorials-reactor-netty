@@ -15,10 +15,23 @@ public class Server {
 
 			OutputStream outputStream = socket.getOutputStream();
 			outputStream.write("我是高洪岩，我来自server端！".getBytes());
+			Thread.sleep(3000);
+			outputStream.write("我是高洪岩1，我来自server端！".getBytes());
+			Thread.sleep(3000);
+			outputStream.write("我是高洪岩2，我来自server端！".getBytes());
+			Thread.sleep(3000);
+			outputStream.write("我是高洪岩3，我来自server端！".getBytes());
+			Thread.sleep(3000);
+			outputStream.write("我是高洪岩4，我来自server端！".getBytes());
+			Thread.sleep(3000);
+			outputStream.write("我是高洪岩5，我来自server端！".getBytes());
+			Thread.sleep(3000);
 			outputStream.close();
 			socket.close();
 			serverSocket.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 

@@ -13,7 +13,7 @@ public class Client {
 			Socket socket = new Socket("localhost", 8088);
 			System.out.println("client连接结束" + System.currentTimeMillis());
 
-			char[] charBuffer = new char[3];
+			char[] charBuffer = new char[20];
 			InputStream inputStream = socket.getInputStream();
 			InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 			System.out.println("ServerB begin:" + System.currentTimeMillis());
